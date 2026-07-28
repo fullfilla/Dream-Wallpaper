@@ -1,6 +1,7 @@
 ﻿# Dream Wallpaper
 
 一个面向 Windows 的图片与视频动态壁纸管理器，使用 Electron 和轻量级 C# 原生辅助程序构建。
+仅供自用
 
 ## 功能
 
