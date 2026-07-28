@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>动态屏保锁定</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    html, body, #surface { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #000; }
+    body { cursor: default; user-select: none; font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif; }
+    #surface { position: relative; }
+    #surface img, #surface video { position: absolute; inset: 0; width: 100%; height: 100%; display: block; background: #000; }
+    .hint { position: fixed; left: 50%; bottom: 7vh; z-index: 3; width: min(560px, calc(100vw - 48px)); transform: translateX(-50%); padding: 15px 20px; border: 1px solid rgba(255,255,255,.18); border-radius: 16px; color: rgba(255,255,255,.96); background: rgba(9,12,18,.68); box-shadow: 0 14px 44px rgba(0,0,0,.3); backdrop-filter: blur(16px); text-align: center; transition: opacity .5s ease, transform .5s ease; }
+    .hint strong, .hint span { display: block; }
+    .hint strong { font-size: 15px; font-weight: 650; letter-spacing: .01em; }
+    .hint span { margin-top: 6px; color: rgba(255,255,255,.67); font-size: 12px; }
+    .hint.hidden { opacity: 0; transform: translate(-50%, 10px); pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div id="surface"></div>
+  <div class="hint" id="hint"><strong>动态屏保 · 点击画面或按任意键进入登录界面</strong><span>移动鼠标不会退出；真正的密码、PIN 或指纹验证由 Windows 完成</span></div>
+  <script src="showcase.js"></script>
+</body>
+</html>

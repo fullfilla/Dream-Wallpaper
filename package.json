@@ -1,0 +1,73 @@
+﻿{
+  "name": "dream-wallpaper",
+  "version": "0.2.1",
+  "description": "Windows image and video wallpaper manager",
+  "main": "main.cjs",
+  "author": "Dream Wallpaper contributors",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build:native": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-native.ps1",
+    "prestart": "npm run build:native",
+    "start": "electron .",
+    "check": "node --check main.cjs && node --check preload.cjs && node --check showcase-preload.cjs && node --check ui/app.js && node --check ui/showcase.js",
+    "build:dir": "npm run build:native && electron-builder --win dir",
+    "build:setup": "npm run build:native && electron-builder --win nsis",
+    "build:portable": "npm run build:native && electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "^43.2.0",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "com.dreamwallpaper.desktop",
+    "productName": "Dream Wallpaper",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "showcase-preload.cjs",
+      "package.json",
+      "ui/index.html",
+      "ui/styles.css",
+      "ui/app.js",
+      "ui/showcase.html",
+      "ui/showcase.js"
+    ],
+    "extraResources": [
+      {
+        "from": "native/WallpaperEngine.exe",
+        "to": "native/WallpaperEngine.exe"
+      },
+      {
+        "from": "native/LockScreenHelper.exe",
+        "to": "native/LockScreenHelper.exe"
+      },
+      {
+        "from": "assets/default.png",
+        "to": "assets/default.png"
+      },
+      {
+        "from": "assets/tray.png",
+        "to": "assets/tray.png"
+      }
+    ],
+    "win": {
+      "executableName": "DreamWallpaper"
+    },
+    "nsis": {
+      "artifactName": "DreamWallpaper-Setup-${version}.${ext}",
+      "oneClick": true,
+      "perMachine": false,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "include": "build/installer.nsh"
+    },
+    "portable": {
+      "artifactName": "DreamWallpaper-Portable-${version}.${ext}"
+    }
+  }
+}

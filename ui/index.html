@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dream Wallpaper</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">D</div>
+        <div><strong>Dream Wallpaper</strong><span>Windows 动态壁纸</span></div>
+      </div>
+      <nav>
+        <button class="nav-item active" data-view="library"><span>▦</span>壁纸图库</button>
+        <button class="nav-item" data-view="settings"><span>⚙</span>播放设置</button>
+      </nav>
+      <div class="runtime-card">
+        <div class="status-line"><i id="statusDot"></i><span id="statusText">正在连接桌面…</span></div>
+        <p id="statusDetail">关闭窗口后仍在托盘运行，动态壁纸不会消失。</p>
+        <div class="runtime-actions">
+          <button type="button" id="restartEngineButton">重试引擎</button>
+          <button type="button" id="openLogsButton">诊断日志</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">PERSONAL WALLPAPER LIBRARY</p>
+          <h1 id="pageTitle">我的壁纸</h1>
+          <p id="pageSubtitle">选择图片或视频，立即应用到 Windows 桌面。</p>
+        </div>
+        <button class="primary" id="importButton"><span>＋</span>添加壁纸</button>
+      </header>
+
+      <section class="view active" id="libraryView">
+        <div class="section-heading">
+          <div><h2>本地图库</h2><p id="libraryCount">0 张壁纸</p></div>
+          <div class="library-heading-actions">
+            <div class="legend"><span><i class="image-dot"></i>图片</span><span><i class="video-dot"></i>视频</span></div>
+            <button class="ghost-button" id="batchModeButton">批量管理</button>
+          </div>
+        </div>
+        <div class="batch-toolbar" id="batchToolbar" hidden>
+          <div><strong id="selectedCount">已选择 0 项</strong><span>正在使用的壁纸会被保护，不参与批量删除。</span></div>
+          <div class="batch-actions">
+            <button class="ghost-button" id="selectAllButton">全选</button>
+            <button class="ghost-button" id="clearSelectionButton">清空</button>
+            <button class="danger-button" id="removeSelectedButton" disabled>删除所选</button>
+            <button class="secondary" id="finishBatchButton">完成</button>
+          </div>
+        </div>
+        <div class="wallpaper-grid" id="wallpaperGrid"></div>
+        <div class="empty-state" id="emptyState" hidden>
+          <div class="empty-icon">＋</div>
+          <h3>添加第一张壁纸</h3>
+          <p>支持 JPG、PNG、WebP、GIF、MP4 和 WebM。</p>
+          <button class="secondary" id="emptyImportButton">选择本地文件</button>
+        </div>
+      </section>
+
+      <section class="view" id="settingsView">
+        <div class="settings-grid">
+          <article class="settings-card wide">
+            <div class="card-title"><div><h2>开机自动恢复</h2><p>登录 Windows 后在后台启动，自动恢复上次使用的动态壁纸。</p></div>
+              <label class="switch"><input id="autoStart" type="checkbox" /><span></span></label>
+            </div>
+            <div class="notice"><strong>不需要重启电脑。</strong>开启后会立即保存设置；下次开机自动运行，管理窗口不会主动弹出。</div>
+          </article>
+
+          <article class="settings-card wide rotation-card">
+            <div class="card-title"><div><h2>定时轮换</h2><p>程序在后台运行时，按照设定间隔自动更换图库中的壁纸。</p></div>
+              <label class="switch"><input id="rotationEnabled" type="checkbox" /><span></span></label>
+            </div>
+            <div class="rotation-controls">
+              <div>
+                <label class="field-label" for="rotationInterval">轮换间隔</label>
+                <select id="rotationInterval">
+                  <option value="1">每 1 分钟</option>
+                  <option value="5">每 5 分钟</option>
+                  <option value="15">每 15 分钟</option>
+                  <option value="30">每 30 分钟</option>
+                  <option value="60">每 1 小时</option>
+                  <option value="180">每 3 小时</option>
+                  <option value="360">每 6 小时</option>
+                  <option value="720">每 12 小时</option>
+                  <option value="1440">每天</option>
+                </select>
+              </div>
+              <div>
+                <label class="field-label" for="rotationMode">轮换方式</label>
+                <select id="rotationMode">
+                  <option value="sequential">按图库顺序</option>
+                  <option value="random">随机选择</option>
+                </select>
+              </div>
+              <button class="secondary rotation-now" id="rotateNowButton" type="button">立即换一张</button>
+            </div>
+            <div class="notice rotation-status" id="rotationStatus">定时轮换尚未开启。</div>
+          </article>
+
+          <article class="settings-card wide lock-screen-card">
+            <div class="card-title"><div><h2>Windows 锁屏</h2><p>将静态图片设为锁屏，并可在桌面壁纸切换时自动同步。</p></div>
+              <label class="switch"><input id="lockScreenSync" type="checkbox" /><span></span></label>
+            </div>
+            <div class="lock-screen-actions">
+              <div><strong>锁屏跟随桌面</strong><span>图片壁纸会自动同步；视频壁纸不会覆盖上一张锁屏图片。</span></div>
+              <button class="secondary" id="applyLockScreenButton" type="button">将当前图片设为锁屏</button>
+            </div>
+            <div class="notice lock-screen-status" id="lockScreenStatus">正在检查 Windows 锁屏支持情况…</div>
+          </article>
+
+          <article class="settings-card wide showcase-card">
+            <div class="card-title"><div><h2>动态屏保锁定</h2><p>电脑无操作时自动全屏播放；移动鼠标不退出，点击或按键后进入 Windows 登录界面。</p></div></div>
+            <div class="screensaver-setting-line">
+              <div><strong>自动进入动态屏保</strong><span>默认无操作 5 分钟后启动；登录回来后从头计时。</span></div>
+              <label class="switch"><input id="screensaverAutoEnabled" type="checkbox" /><span></span></label>
+            </div>
+            <div class="screensaver-controls">
+              <div>
+                <label class="field-label" for="screensaverIdleMinutes">无操作后出现</label>
+                <select id="screensaverIdleMinutes">
+                  <option value="1">1 分钟</option>
+                  <option value="3">3 分钟</option>
+                  <option value="5">5 分钟</option>
+                  <option value="10">10 分钟</option>
+                  <option value="15">15 分钟</option>
+                  <option value="30">30 分钟</option>
+                </select>
+              </div>
+              <div class="screensaver-rotation-toggle">
+                <label class="field-label">屏保内容轮换</label>
+                <div><strong>自动换一张</strong><label class="switch"><input id="screensaverRotationEnabled" type="checkbox" /><span></span></label></div>
+              </div>
+              <div>
+                <label class="field-label" for="screensaverRotationInterval">屏保轮换间隔</label>
+                <select id="screensaverRotationInterval">
+                  <option value="1">每 1 分钟</option>
+                  <option value="2">每 2 分钟</option>
+                  <option value="3">每 3 分钟</option>
+                  <option value="5">每 5 分钟</option>
+                  <option value="10">每 10 分钟</option>
+                  <option value="15">每 15 分钟</option>
+                  <option value="30">每 30 分钟</option>
+                </select>
+              </div>
+              <div>
+                <label class="field-label" for="screensaverRotationMode">屏保轮换方式</label>
+                <select id="screensaverRotationMode">
+                  <option value="random">随机选择</option>
+                  <option value="sequential">按图库顺序</option>
+                </select>
+              </div>
+            </div>
+            <div class="showcase-actions">
+              <div><strong>立即预览动态屏保</strong><span>屏保单独轮换，不改变桌面壁纸；点击或按键后锁定 Windows。</span></div>
+              <button class="secondary" id="toggleShowcaseButton" type="button">立即进入动态屏保</button>
+            </div>
+            <div class="notice showcase-status" id="showcaseStatus">正在读取自动屏保设置…</div>
+          </article>
+
+
+          <article class="settings-card">
+            <div class="card-title"><div><h2>显示方式</h2><p>控制图片和视频如何填满屏幕。</p></div></div>
+            <label class="field-label" for="fitSelect">壁纸填充</label>
+            <select id="fitSelect">
+              <option value="cover">填充屏幕（推荐）</option>
+              <option value="contain">完整显示</option>
+              <option value="fill">拉伸铺满</option>
+            </select>
+            <div class="range-row"><label for="positionX">水平焦点 <b id="positionXValue">50%</b></label><input id="positionX" type="range" min="0" max="100" value="50" /></div>
+            <div class="range-row"><label for="positionY">垂直焦点 <b id="positionYValue">50%</b></label><input id="positionY" type="range" min="0" max="100" value="50" /></div>
+          </article>
+
+          <article class="settings-card">
+            <div class="card-title"><div><h2>视频播放</h2><p>动态壁纸会自动循环播放。</p></div></div>
+            <div class="setting-line"><div><strong>静音播放</strong><span>避免壁纸声音影响其他软件</span></div><label class="switch"><input id="muted" type="checkbox" /><span></span></label></div>
+            <div class="range-row"><label for="volume">音量 <b id="volumeValue">0%</b></label><input id="volume" type="range" min="0" max="100" value="0" /></div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
+

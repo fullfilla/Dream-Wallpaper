@@ -1,0 +1,9 @@
+﻿node_modules/
+release/
+dist/
+*.log
+*.pid
+.DS_Store
+Thumbs.db
+native/*.exe
+!assets/tray.png
